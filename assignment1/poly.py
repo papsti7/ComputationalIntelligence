@@ -45,10 +45,7 @@ def design_matrix(x, degree):
     # TIP: use the power function from numpy
     N = x.shape[0]
     degree_new = degree + 1
-    print("shape: ", N)
-    print("degree + 1: ", degree_new)
     shape_new = (N, degree_new)
-    print("new Shape: ", shape_new)
     X = np.zeros(shape_new)
     for i in range(0, degree_new):
         for j in range(0,N):
@@ -82,17 +79,17 @@ def train(x, y, degree):
     # TIPs:
     #  - Don't forget to first expand the data
     #  - WARNING:   With numpy array * is a term-term matrix multiplication
-    #               The function np.dot performs a classic matrix multiplication
+    #               The function np.dot performs a classic scalarprodukt
     #
     #  - To compute the pseudo inverse (A*A.T)^-1 * A.T with a more stable algorithm numpy provides the function pinv
     #   pinv is accessible in the sub-library numpy.linalg
     #
-
-    theta_opt = np.zeros(degree + 1)  # TODO: Change me
+    x = design_matrix(x, degree)
+    theta_opt = np.dot(pinv(x), y)
 
     # END TODO
     ######################
-
+    exit()
     return theta_opt
 
 
