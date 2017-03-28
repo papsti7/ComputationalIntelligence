@@ -89,7 +89,6 @@ def train(x, y, degree):
 
     # END TODO
     ######################
-    exit()
     return theta_opt
 
 
@@ -120,7 +119,8 @@ def compute_error(theta, degree, x, y):
     #
     #  - One can use the numpy function mean
 
-    err = -1  # TODO: Change me
+    x = design_matrix(x, degree)
+    err = np.sum(np.power(np.dot(x, theta) - y, 2)) / x.shape[0]
 
     #
     # END TODO
