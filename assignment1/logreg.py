@@ -28,9 +28,11 @@ def cost(theta, x, y):
     #
     # TODO
     #
-    # Write the cost of logistic regression as defined in the lecture
 
-    c = 0
+    x_O = x.dot(theta)
+    h_O = sig(x_O)
+    c = - np.sum(np.dot(y, np.log(h_O)) + np.dot((1 - y), np.log(1 - h_O))) / N
+
 
     # END TODO
     ###########
@@ -54,8 +56,15 @@ def grad(theta, x, y):
     #
     # TODO
     #
-
     g = np.zeros(theta.shape)
+
+    for row in range(g.shape[0]):
+        sum = 0
+        for feature in range(N):
+            x_O = x[feature].dot(theta)
+            h_O = sig(x_O)
+            sum += (h_O - y[feature]) * x[feature][row]
+        g[row] = sum / float(N)
 
     # END TODO
     ###########
