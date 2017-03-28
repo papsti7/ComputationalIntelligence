@@ -25,7 +25,7 @@ TODO boxes are here and in 'poly.py'
 
 def main():
     # Number of possible degrees to be tested
-    K = 21
+    K = 21 # 30
     data_path = 'data_linreg.json'
 
     # Load the data
@@ -45,6 +45,7 @@ def main():
     for i in range(K):
         theta_list[i], mse_train[i], mse_val[i], mse_test[i] = poly.train_and_test(data, degrees[i])
 
+
     ######################
     #
     # TODO
@@ -55,7 +56,8 @@ def main():
     # TIPs:
     # - use the argmin function of numpy
     # - the code above is already giving the vectors of errors
-    i_best = 0  # TODO: Change this
+    #i_best = np.argmin(mse_test)
+    i_best = np.argmin(mse_val)
     best_degree = degrees[i_best]
     best_theta = theta_list[i_best]
     #

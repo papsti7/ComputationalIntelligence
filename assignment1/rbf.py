@@ -11,7 +11,7 @@ Section: Linear Regression with radial basis functions
 
 This file contains the main work to be done.
 The functions are:
-- TODO get_centers_and_sigma: Compte the centers as explained in the assignement hand-out sheet
+- TODO get_centers_and_sigma: Compute the centers as explained in the assignment hand-out sheet
 - TODO design_matrix: Create the design matrix including the rbf expansions and the constant feature
 - TODO train: finds the analytical solution of linear regression
 - TODO compute_error: return the cost function of linear regression Mean Square Error
@@ -37,12 +37,11 @@ def get_centers_and_sigma(n_center):
     #       an euclidian division. The solution is to convert one of the two integers to float.
     #
 
-    centers = np.zeros(n_center)  # TODO: Change me
-    sigma = 1.  # TODO: Change me
+    centers = np.linspace(-1.0, 1.0, num=n_center)
+    sigma = 2/n_center
 
     # END TODO
     ######################
-
     return centers, sigma
 
 
@@ -74,7 +73,19 @@ def design_matrix(x, centers, sigma):
     # TIP: don't forget that the first row has only ones
     #
 
-    res = x  # TODO: Change me
+    N = x.shape[0]
+    #print(centers.shape)
+    degree_new = centers.shape[0] + 1
+    shape_new = (N, degree_new)
+    #print(shape_new)
+    X = np.zeros(shape_new)
+    for i in range(0, degree_new):
+        for j in range(0, N):
+            if i == 0:
+                X[j][i] = 1
+            else:
+                X[j][i] = np.exp(-np.power((x[j][0] - centers[i-1]), 2) / (2 * np.power(sigma, 2)))
+    res = X
 
     # END TODO
     ######################
@@ -105,7 +116,10 @@ def train(x, y, n_center):
     #   - This should not be very different from the solution you provided in poly.py
     #
 
-    theta_opt = np.zeros(n_center + 1)  # TODO: Change me
+    centers, sigma = get_centers_and_sigma(n_center)
+    X = design_matrix(x, centers, sigma)
+
+    theta_opt = np.dot(pinv(X), y)
 
     # END TODO
     ######################
@@ -136,7 +150,10 @@ def compute_error(theta, n_centers, x, y):
     #   - This should not be very different from the solution you provided in poly.py
     #
 
-    err = -1  # TODO: Change me
+    centers, sigma = get_centers_and_sigma(n_centers)
+    x = design_matrix(x, centers, sigma)
+
+    err = np.sum(np.power(np.dot(x, theta) - y, 2)) / x.shape[0]
 
     # END TODO
     ######################
