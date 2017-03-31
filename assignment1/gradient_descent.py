@@ -37,9 +37,11 @@ def gradient_descent(f, df, x0, learning_rate, max_iter):
     E_list = np.zeros(max_iter)
     x = x0
 
-    for i in range(0, max_iter):
-        x = x - df(x) * learning_rate
+    for i in range(max_iter):
+        x -= learning_rate * df(x)
         E_list[i] = f(x)
+
+
 
     # END TODO
     ###########
