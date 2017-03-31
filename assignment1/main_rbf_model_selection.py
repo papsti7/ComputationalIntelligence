@@ -26,6 +26,7 @@ def main():
     K = 40
     data_path = 'data_linreg.json'
 
+
     # Load the data
     f = open(data_path, 'r')
     data = json.load(f)

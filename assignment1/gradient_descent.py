@@ -37,6 +37,10 @@ def gradient_descent(f, df, x0, learning_rate, max_iter):
     E_list = np.zeros(max_iter)
     x = x0
 
+    for i in range(0, max_iter):
+        x = x - df(x) * learning_rate
+        E_list[i] = f(x)
+
     # END TODO
     ###########
 
@@ -73,6 +77,16 @@ def adaptative_gradient_descent(f, df, x0, initial_learning_rate, max_iter):
     l_rate = initial_learning_rate
     E_list = np.zeros(max_iter)
     x = x0
+
+    for i in range(0, max_iter):
+        x_new = x - df(x) * l_rate
+        if f(x) < f(x_new):
+            l_rate *= 0.7
+        else:
+            l_rate *= 1.03
+            x = x_new
+
+        E_list[i] = f(x)
 
     # END TODO
     ###########

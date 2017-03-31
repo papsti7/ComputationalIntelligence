@@ -49,12 +49,12 @@ def main():
     theta_opt, E_list = gd.gradient_descent(f, df, theta0, eta, max_iter)
 
     #### VARIANT 2: Optimize with gradient descent
-    # theta_opt, E_list, l_rate_final = gd.adaptative_gradient_descent(f, df, theta0, eta, max_iter)
-    # print('Adaptative gradient, final learning rate: {:.3g}'.format(l_rate_final))
+    #theta_opt, E_list, l_rate_final = gd.adaptative_gradient_descent(f, df, theta0, eta, max_iter)
+    #print('Adaptative gradient, final learning rate: {:.3g}'.format(l_rate_final))
 
     #### VARIANT 3: Optimize with gradient descent
-    # res = minimize(f, x0=theta0, jac=df, options={'disp': True})
-    # theta_opt = res.x.reshape((n, 1))
+    #res = minimize(f, x0=theta0, jac=df, options={'disp': True})
+    #theta_opt = res.x.reshape((n, 1))
 
     E_list = []
     logreg_toolbox.plot_logreg(data, degree, theta_opt, E_list)

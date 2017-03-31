@@ -56,15 +56,11 @@ def grad(theta, x, y):
     #
     # TODO
     #
-    g = np.zeros(theta.shape)
 
-    for row in range(g.shape[0]):
-        sum = 0
-        for feature in range(N):
-            x_O = x[feature].dot(theta)
-            h_O = sig(x_O)
-            sum += (h_O - y[feature]) * x[feature][row]
-        g[row] = sum / float(N)
+    x_O = x.dot(theta)
+    h_O = sig(x_O)
+    tmp = h_O - y
+    g = 1. / N * tmp.dot(x)
 
     # END TODO
     ###########

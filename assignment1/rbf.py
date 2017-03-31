@@ -74,10 +74,8 @@ def design_matrix(x, centers, sigma):
     #
 
     N = x.shape[0]
-    #print(centers.shape)
     degree_new = centers.shape[0] + 1
     shape_new = (N, degree_new)
-    #print(shape_new)
     X = np.zeros(shape_new)
     for i in range(0, degree_new):
         for j in range(0, N):
