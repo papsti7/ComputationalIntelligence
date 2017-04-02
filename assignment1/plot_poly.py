@@ -27,6 +27,7 @@ def plot_poly(data, degree, theta_opt, n_line_precision=100):
     """
 
     fig, ax_list = plt.subplots(2, 2)
+    plt.subplots_adjust(hspace=0.4)
 
     # Plot the polynomials
     xx = np.linspace(-1, 1, n_line_precision).reshape((n_line_precision, 1))
