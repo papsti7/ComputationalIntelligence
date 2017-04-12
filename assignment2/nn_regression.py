@@ -279,4 +279,38 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
     :return:
     '''
     ## TODO
+    (x_train, y_train, x_val, y_val) = splitInValAndTest(x_train, y_train)
+
+    min_test_errors = np.zeros(10)
+    last_test_errors = np.zeros(10)
+    min_val_errors = np.zeros(10)
+    regs = np.zeros(10)
+    for i in range(10):
+        regressor = MLPRegressor(
+            hidden_layer_sizes=(40,),
+            solver="lbfgs",
+            activation="logistic",
+            alpha=10e-3,
+            max_iter=1,
+            warm_start=True,
+            random_state=randint(1, 1000)
+        )
+
+        val_errors = []
+        test_errors = []
+        for j in range(0, 2000):
+            regressor.fit(x_train, y_train)
+            if j % 20 == 0:
+                if val_errors[-1] < calculate_mse(regressor, x_val, y_val):
+                    break
+                test_errors.append(calculate_mse(regressor, x_test, y_test))
+                val_errors.append(calculate_mse(regressor, x_val, y_val))
+
+        last_test_errors[i] = calculate_mse(regressor, x_test, y_test)
+        min_val_errors[i] = test_errors[np.argmin(val_errors)]
+        min_test_errors[i] = test_errors[np.argmin(test_errors)]
+        regs[i] = regressor
+
+    #TODO things which are needed for report
+
     pass
