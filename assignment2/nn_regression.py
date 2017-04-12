@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.metrics import mean_squared_error
 from sklearn.neural_network.multilayer_perceptron import MLPRegressor
 import matplotlib.pyplot as plt
+from random import randint
 
 from nn_regression_plot import plot_mse_vs_neurons, plot_mse_vs_iterations, plot_learned_function, \
     plot_mse_vs_alpha,plot_bars_early_stopping_mse_comparison
@@ -74,12 +75,12 @@ def ex_1_1_b(x_train, x_test, y_train, y_test):
     mse_tests = []
     for index in range(0,10):
         regressor = MLPRegressor(
-            hidden_layer_sizes=(2,),  # 8,40
+            hidden_layer_sizes=(8,),
             solver="lbfgs",
             activation="logistic",
             alpha=0.0,
             max_iter=200,
-            random_state=index
+            random_state=randint(1,1000)
         )
 
         regressor.fit(x_train, y_train)
@@ -113,6 +114,26 @@ def ex_1_1_c(x_train, x_test, y_train, y_test):
     """
 
     ## TODO
+    neuron_numbers = [1, 2, 3, 4, 6, 8, 12, 20, 40]
+    mses_test = np.zeros((9,10))
+    mses_train = np.zeros((9,10))
+    for n in neuron_numbers:
+        for i in range(0,10):
+            random_seed = randint(1,1000)
+            regressor = MLPRegressor(
+                hidden_layer_sizes=(n,),
+                solver="lbfgs",
+                activation="logistic",
+                alpha=0.0,
+                max_iter=200,
+                random_state=random_seed
+            )
+            regressor.fit(x_train, y_train)
+            mses_train[neuron_numbers.index(n)][i] = calculate_mse(regressor, x_train, y_train)
+            mses_test[neuron_numbers.index(n)][i] = calculate_mse(regressor, x_test, y_test)
+
+    plot_mse_vs_neurons(mses_train, mses_test, neuron_numbers)
+
     pass
 
 def ex_1_1_d(x_train, x_test, y_train, y_test):
@@ -127,6 +148,24 @@ def ex_1_1_d(x_train, x_test, y_train, y_test):
     """
 
     ## TODO
+    neuron_numbers = [2, 8, 20]
+    mses_test = np.zeros((3,1000))
+    mses_train = np.zeros((3,1000))
+    for n in neuron_numbers:
+        regressor = MLPRegressor(
+            hidden_layer_sizes=(n,),
+            solver="lbfgs",
+            activation="logistic",
+            alpha=0.0,
+            max_iter=1,
+            warm_start=True
+        )
+        for j in range(0, 1000):
+            regressor.fit(x_train, y_train)
+            mses_train[neuron_numbers.index(n)][j] = calculate_mse(regressor, x_train, y_train)
+            mses_test[neuron_numbers.index(n)][j] = calculate_mse(regressor, x_test, y_test)
+
+    plot_mse_vs_iterations(mses_train,mses_test, 1000, neuron_numbers)
     pass
 
 
@@ -143,8 +182,48 @@ def ex_1_2_a(x_train, x_test, y_train, y_test):
     :return:
     """
     ## TODO
+    hidden_neurons = 40
+    alphas = [10e-8, 10e-7, 10e-6, 10e-5, 10e-4, 10e-3, 10e-2, 10e-1, 1, 10, 100]
+    mses_train = np.zeros((len(alphas), 10))
+    mses_test = np.zeros((len(alphas), 10))
+    for alpha in alphas:
+        for i in range(10):
+            random_seed = randint(0, 1000)
+            regressor = MLPRegressor(
+                hidden_layer_sizes=(hidden_neurons,),
+                solver="lbfgs",
+                activation="logistic",
+                alpha=alpha,
+                max_iter=200,
+                random_state=random_seed
+            )
+            regressor.fit(x_train, y_train)
+            mses_test[alphas.index(alpha)][i] = calculate_mse(regressor, x_test, y_test)
+            mses_train[alphas.index(alpha)][i] = calculate_mse(regressor, x_train, y_train)
+
+    plot_mse_vs_alpha(mses_train, mses_test, alphas)
     pass
 
+def splitInValAndTest(x_train, y_train):
+    # permutate indexes and split training set
+    index_list = np.random.permutation(len(y_train))
+    new_size = int(len(y_train) / 2)
+    train_indexes = index_list[:new_size]
+    x_train_new = np.ndarray((new_size, 1))
+    y_train_new = np.ndarray(new_size)
+
+    validation_indexes = index_list[new_size:]
+    validation_x = np.ndarray((new_size,1 ))
+    validation_y = np.ndarray(new_size)
+
+    for i in range(new_size):
+        x_train_new[i] = x_train[train_indexes[i]]
+        y_train_new[i] = y_train[train_indexes[i]]
+
+        validation_x[i] = x_train[validation_indexes[i]]
+        validation_y[i] = y_train[validation_indexes[i]]
+
+    return x_train_new, y_train_new, validation_x, validation_y
 
 def ex_1_2_b(x_train, x_test, y_train, y_test):
     """
@@ -157,7 +236,38 @@ def ex_1_2_b(x_train, x_test, y_train, y_test):
     :return:
     """
     ## TODO
+    ##TODO change function because of plagiat
+    (x_train, y_train, x_val, y_val) = splitInValAndTest(x_train, y_train)
+
+    min_test_errors = np.zeros(10)
+    last_test_errors = np.zeros(10)
+    min_val_errors = np.zeros(10)
+    for i in range(10):
+        regressor = MLPRegressor(
+            hidden_layer_sizes=(40,),
+            solver="lbfgs",
+            activation="logistic",
+            alpha=10e-3,
+            max_iter=1,
+            warm_start=True,
+            random_state=randint(1,1000)
+        )
+
+        val_errors = []
+        test_errors = []
+        for j in range(0, 2000):
+            regressor.fit(x_train, y_train)
+            if j % 20 == 0:
+                test_errors.append(calculate_mse(regressor, x_test, y_test))
+                val_errors.append(calculate_mse(regressor, x_val, y_val))
+
+        last_test_errors[i] = calculate_mse(regressor, x_test, y_test)
+        min_val_errors[i] = test_errors[np.argmin(val_errors)]
+        min_test_errors[i] = test_errors[np.argmin(test_errors)]
+
+    plot_bars_early_stopping_mse_comparison(last_test_errors,min_val_errors, min_test_errors)
     pass
+
 
 def ex_1_2_c(x_train, x_test, y_train, y_test):
     '''
