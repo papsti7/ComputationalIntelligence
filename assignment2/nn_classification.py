@@ -21,6 +21,17 @@ Fill in all the sections containing TODO!
 
 def ex_2_1(input2, target2):
     ## TODO
+
+    classifier = MLPClassifier(
+        hidden_layer_sizes=(6,),
+        solver="adam",
+        max_iter=200,
+        activation="tanh"
+    )
+    print(input2.shape)
+    print(target2.shape)
+    conf_mat = confusion_matrix(input2, target2)
+    print(conf_mat)
     pass
 
 
@@ -28,7 +39,3 @@ def ex_2_2(input1, target1, input2, target2):
     ## TODO
     pass
 
-
-def calculate_mse(nn, x, y):
-    ## TODO
-    return 0

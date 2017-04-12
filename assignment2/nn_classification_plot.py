@@ -15,6 +15,15 @@ __author__ = 'bellec,subramoney'
 IMAGE_DIM = (32, 30)
 
 
+def plot_image(image_matrix):
+    ax = plt.subplot()
+    # Rotate the image the right way using .T
+    ax.imshow(image_matrix.reshape(*IMAGE_DIM).T, cmap=plt.cm.gray)
+    ax.set_xticks(())
+    ax.set_yticks(())
+    plt.show()
+
+
 def plot_random_images(inp, n_images=3):
     """
     Picks some random images from the dataset passed in (default 3) and plots them as an image
