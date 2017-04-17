@@ -47,16 +47,16 @@ def ex_1_1_a(x_train, x_test, y_train, y_test):
 
     ## TODO
     regressor = MLPRegressor(
-    hidden_layer_sizes=(2,),#8,40
+    hidden_layer_sizes=(40,),#8,40
     solver="lbfgs",
     activation="logistic",
     alpha=0.0,
     max_iter=200,
     )
     regressor.fit(x_train, y_train)
-    plot_learned_function(2,x_train, y_train,regressor.predict(x_train), x_test, y_test, regressor.predict(x_test))
+    #plot_learned_function(2,x_train, y_train,regressor.predict(x_train), x_test, y_test, regressor.predict(x_test))
     #plot_learned_function(8, x_train, y_train, regressor.predict(x_train), x_test, y_test, regressor.predict(x_test))
-    #plot_learned_function(40, x_train, y_train, regressor.predict(x_train), x_test, y_test, regressor.predict(x_test))
+    plot_learned_function(40, x_train, y_train, regressor.predict(x_train), x_test, y_test, regressor.predict(x_test))
     pass
 
 def ex_1_1_b(x_train, x_test, y_train, y_test):
@@ -91,7 +91,7 @@ def ex_1_1_b(x_train, x_test, y_train, y_test):
     print("min_test:", np.min(mse_tests))
 
     print("max_train:", np.max(mse_trains))
-    print("max_text:", np.max(mse_tests))
+    print("max_test:", np.max(mse_tests))
 
     print("mean_train:", np.mean(mse_trains))
     print("mean_test:", np.mean(mse_tests))
@@ -154,7 +154,7 @@ def ex_1_1_d(x_train, x_test, y_train, y_test):
     for n in neuron_numbers:
         regressor = MLPRegressor(
             hidden_layer_sizes=(n,),
-            solver="lbfgs",
+            solver="adam",
             activation="logistic",
             alpha=0.0,
             max_iter=1,
@@ -204,26 +204,6 @@ def ex_1_2_a(x_train, x_test, y_train, y_test):
     plot_mse_vs_alpha(mses_train, mses_test, alphas)
     pass
 
-def splitInValAndTest(x_train, y_train):
-    # permutate indexes and split training set
-    index_list = np.random.permutation(len(y_train))
-    new_size = int(len(y_train) / 2)
-    train_indexes = index_list[:new_size]
-    x_train_new = np.ndarray((new_size, 1))
-    y_train_new = np.ndarray(new_size)
-
-    validation_indexes = index_list[new_size:]
-    validation_x = np.ndarray((new_size,1 ))
-    validation_y = np.ndarray(new_size)
-
-    for i in range(new_size):
-        x_train_new[i] = x_train[train_indexes[i]]
-        y_train_new[i] = y_train[train_indexes[i]]
-
-        validation_x[i] = x_train[validation_indexes[i]]
-        validation_y[i] = y_train[validation_indexes[i]]
-
-    return x_train_new, y_train_new, validation_x, validation_y
 
 def ex_1_2_b(x_train, x_test, y_train, y_test):
     """
@@ -236,8 +216,27 @@ def ex_1_2_b(x_train, x_test, y_train, y_test):
     :return:
     """
     ## TODO
-    ##TODO change function because of plagiat
-    (x_train, y_train, x_val, y_val) = splitInValAndTest(x_train, y_train)
+
+    indices = np.random.permutation(len(y_train))
+    new_size = int(len(y_train) / 2)
+
+    x_train_ = np.ndarray((new_size, 1))
+    y_train_ = np.ndarray(new_size)
+    indices_train = indices[:new_size]
+
+    indices_val = indices[new_size:]
+    x_val = np.ndarray((new_size, 1))
+    y_val = np.ndarray(new_size)
+
+    for i in range(new_size):
+        x_train_[i] = x_train[indices_train[i]]
+        y_train_[i] = y_train[indices_train[i]]
+
+        x_val[i] = x_train[indices_val[i]]
+        y_val[i] = y_train[indices_val[i]]
+
+    x_train = x_train_
+    y_train = y_train_
 
     min_test_errors = np.zeros(10)
     last_test_errors = np.zeros(10)
@@ -279,7 +278,26 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
     :return:
     '''
     ## TODO
-    (x_train, y_train, x_val, y_val) = splitInValAndTest(x_train, y_train)
+    indices = np.random.permutation(len(y_train))
+    new_size = int(len(y_train) / 2)
+
+    x_train_ = np.ndarray((new_size, 1))
+    y_train_ = np.ndarray(new_size)
+    indices_train = indices[:new_size]
+
+    indices_val = indices[new_size:]
+    x_val = np.ndarray((new_size, 1))
+    y_val = np.ndarray(new_size)
+
+    for i in range(new_size):
+        x_train_[i] = x_train[indices_train[i]]
+        y_train_[i] = y_train[indices_train[i]]
+
+        x_val[i] = x_train[indices_val[i]]
+        y_val[i] = y_train[indices_val[i]]
+
+    x_train = x_train_
+    y_train = y_train_
 
     min_test_errors = np.zeros(10)
     last_test_errors = np.zeros(10)
