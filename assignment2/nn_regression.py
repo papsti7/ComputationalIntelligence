@@ -183,7 +183,7 @@ def ex_1_2_a(x_train, x_test, y_train, y_test):
     """
     ## TODO
     hidden_neurons = 40
-    alphas = [10e-8, 10e-7, 10e-6, 10e-5, 10e-4, 10e-3, 10e-2, 10e-1, 1, 10, 100]
+    alphas = [1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100]
     mses_train = np.zeros((len(alphas), 10))
     mses_test = np.zeros((len(alphas), 10))
     for alpha in alphas:
@@ -202,7 +202,6 @@ def ex_1_2_a(x_train, x_test, y_train, y_test):
             mses_train[alphas.index(alpha)][i] = calculate_mse(regressor, x_train, y_train)
 
     plot_mse_vs_alpha(mses_train, mses_test, alphas)
-    pass
 
 
 def ex_1_2_b(x_train, x_test, y_train, y_test):
@@ -302,7 +301,8 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
     min_test_errors = np.zeros(10)
     last_test_errors = np.zeros(10)
     min_val_errors = np.zeros(10)
-    regs = np.zeros(10)
+    regs = []
+
     for i in range(10):
         regressor = MLPRegressor(
             hidden_layer_sizes=(40,),
@@ -316,10 +316,11 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
 
         val_errors = []
         test_errors = []
+        train_errors = []
         for j in range(0, 2000):
             regressor.fit(x_train, y_train)
             if j % 20 == 0:
-                if val_errors[-1] < calculate_mse(regressor, x_val, y_val):
+                if val_errors and val_errors[-1] < calculate_mse(regressor, x_val, y_val):
                     break
                 test_errors.append(calculate_mse(regressor, x_test, y_test))
                 val_errors.append(calculate_mse(regressor, x_val, y_val))
@@ -327,8 +328,17 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
         last_test_errors[i] = calculate_mse(regressor, x_test, y_test)
         min_val_errors[i] = test_errors[np.argmin(val_errors)]
         min_test_errors[i] = test_errors[np.argmin(test_errors)]
-        regs[i] = regressor
+        regs.append(regressor)
+
 
     #TODO things which are needed for report
+
+    optimal_seed = np.argmin(min_val_errors)
+    print(min_test_errors)
+    print(min_val_errors)
+
+    print("min validation error: ", min_val_errors[optimal_seed])
+    print("min test error:       ", min_test_errors[optimal_seed])
+    #print("min training error:   ", )
 
     pass

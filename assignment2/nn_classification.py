@@ -33,12 +33,10 @@ def ex_2_1(input2, target2):
     plot_hidden_layer_weights(classifier.coefs_[0])
 
 
-    pass
-
-
 def ex_2_2(input1, target1, input2, target2):
     ## TODO
     scores = []
+    scores_train = []
     classifiers = []
     for i in range(10):
         classifier = MLPClassifier(
@@ -51,10 +49,13 @@ def ex_2_2(input1, target1, input2, target2):
         classifier.fit(input1, target1[:, 0])
         scores.append(classifier.score(input2, target2[:,0]))
         classifiers.append(classifier)
+        scores_train.append(classifier.score(input1, target1[:,0]))
 
     conf_mat = confusion_matrix(target2[:,0], classifiers[np.argmax(scores)].predict(input2))
 
-    plot_histogram_of_acc(classifier.score(input1, target1[:,0]), classifier.score(input2, target2[:,0]))
+    plot_histogram_of_acc(scores_train, scores)
+    #plot_histogram_of_acc(classifiers[np.argmax(scores)], classifier.score(input2, target2[:, 0]))
+    #plot_histogram_of_acc(classifier.score(input1, target1[:,0]), classifier.score(input2, target2[:,0]))
     predected_target = classifier.predict(input2)
     misclassified_images = []
     for i in range(len(target2[:,0])):
