@@ -299,7 +299,7 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
     y_train = y_train_
 
     min_test_errors = np.zeros(10)
-    last_test_errors = np.zeros(10)
+    min_train_error = np.zeros(10)
     min_val_errors = np.zeros(10)
     regs = []
 
@@ -316,7 +316,6 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
 
         val_errors = []
         test_errors = []
-        train_errors = []
         for j in range(0, 2000):
             regressor.fit(x_train, y_train)
             if j % 20 == 0:
@@ -325,7 +324,7 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
                 test_errors.append(calculate_mse(regressor, x_test, y_test))
                 val_errors.append(calculate_mse(regressor, x_val, y_val))
 
-        last_test_errors[i] = calculate_mse(regressor, x_test, y_test)
+        min_train_error[i] = calculate_mse(regressor, x_train, y_train)
         min_val_errors[i] = test_errors[np.argmin(val_errors)]
         min_test_errors[i] = test_errors[np.argmin(test_errors)]
         regs.append(regressor)
@@ -334,11 +333,20 @@ def ex_1_2_c(x_train, x_test, y_train, y_test):
     #TODO things which are needed for report
 
     optimal_seed = np.argmin(min_val_errors)
-    print(min_test_errors)
-    print(min_val_errors)
+    print("optimal seed #: ", optimal_seed)
 
-    print("min validation error: ", min_val_errors[optimal_seed])
-    print("min test error:       ", min_test_errors[optimal_seed])
-    #print("min training error:   ", )
+    print("-------------------------------------------------------")
+    print("train mean derivation:       ", np.mean(min_train_error))
+    print("val mean derivation:         ", np.mean(min_val_errors))
+    print("test mean derivation:        ", np.mean(min_test_errors))
+    print("-------------------------------------------------------")
+    print("train standard derivation:   ", np.std(min_train_error))
+    print("val standard derivation:     ", np.std(min_val_errors))
+    print("test standard derivation:    ", np.std(min_test_errors))
+    print("-------------------------------------------------------")
+    print("min train error:             ", min_train_error[optimal_seed])
+    print("min val error:               ", min_val_errors[optimal_seed])
+    print("min test error:              ", min_test_errors[optimal_seed])
+
 
     pass
