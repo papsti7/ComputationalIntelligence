@@ -29,6 +29,12 @@ def ex_1_a(x, y):
     ## Train an SVM with a linear kernel
     ## and plot the decision boundary and support vectors using 'plot_svm_decision_boundary' function
     ###########
+
+    linSVM = svm.SVC(kernel="linear")
+    #print("X:", x.shape)
+    #print("Y:", y.shape)
+    linSVM.fit(x, y)
+    plot_svm_decision_boundary(linSVM, x, y)
     pass
 
 
@@ -45,6 +51,22 @@ def ex_1_b(x, y):
     ## train an SVM with a linear kernel
     ## and plot the decision boundary and support vectors using 'plot_svm_decision_boundary' function
     ###########
+    #print("x:", x)
+    #print("y:", y)
+    #print("x.shape:", x.shape)
+    #print("y.shape:", y.shape)
+    point = np.array([4,0])
+    #print("point:", point)
+    #print("point_shape:", point.shape)
+    x_new = np.vstack((x, point))
+    #print("x_new:", x_new)
+    #print("x_new.shape:", x_new.shape)
+    y_new = np.hstack((y, 1))
+    #print("y_new:", y_new)
+    #print("y_new.shape:", y_new.shape)
+    linSVM = svm.SVC(kernel="linear")
+    linSVM.fit(x_new, y_new)
+    plot_svm_decision_boundary(linSVM, x_new, y_new)
     pass
 
 
@@ -62,7 +84,16 @@ def ex_1_c(x, y):
     ## and plot the decision boundary and support vectors  for each using 'plot_svm_decision_boundary' function
     ###########
     Cs = [1e6, 1, 0.1, 0.001]
+    point = np.array([4, 0])
+    x_new = np.vstack((x, point))
+    y_new = np.hstack((y, 1))
+    linSVM = svm.SVC(kernel="linear")
+    for c in Cs:
+        linSVM.set_params(C=c)
+        linSVM.fit(x_new, y_new)
+        plot_svm_decision_boundary(linSVM, x_new, y_new)
 
+    pass
 
 def ex_2_a(x_train, y_train, x_test, y_test):
     """

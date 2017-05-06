@@ -35,10 +35,10 @@ def ex_1():
     data = load_data('data.json')
     x, y = data['X'], data['Y'].ravel()
 
-    plot_data_points(x, y)
+    #plot_data_points(x, y)
 
-    ex_1_a(x, y)
-    ex_1_b(x, y)
+    #ex_1_a(x, y)
+    #ex_1_b(x, y)
     ex_1_c(x, y)
 
 
@@ -67,8 +67,8 @@ def ex_3():
 
 def main():
     ex_1()
-    ex_2()
-    ex_3()
+   # ex_2()
+    #ex_3()
 
 
 if __name__ == '__main__':
