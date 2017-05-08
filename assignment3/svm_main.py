@@ -35,10 +35,10 @@ def ex_1():
     data = load_data('data.json')
     x, y = data['X'], data['Y'].ravel()
 
-    #plot_data_points(x, y)
+    plot_data_points(x, y)
 
-    #ex_1_a(x, y)
-    #ex_1_b(x, y)
+    ex_1_a(x, y)
+    ex_1_b(x, y)
     ex_1_c(x, y)
 
 
@@ -47,10 +47,10 @@ def ex_2():
     x_train, y_train, x_test, y_test = \
         data['X'], data['Y'].ravel(), data['XT'], data['YT'].ravel()
 
-    plot_data_points(x_train, y_train, x_test, y_test)
+    #plot_data_points(x_train, y_train, x_test, y_test)
 
-    ex_2_a(x_train, y_train, x_test, y_test)
-    ex_2_b(x_train, y_train, x_test, y_test)
+    #ex_2_a(x_train, y_train, x_test, y_test)
+    #ex_2_b(x_train, y_train, x_test, y_test)
     ex_2_c(x_train, y_train, x_test, y_test)
 
 
@@ -66,8 +66,8 @@ def ex_3():
 
 
 def main():
-    ex_1()
-   # ex_2()
+    #ex_1()
+    ex_2()
     #ex_3()
 
 

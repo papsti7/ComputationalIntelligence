@@ -35,7 +35,7 @@ def ex_1_a(x, y):
     #print("Y:", y.shape)
     linSVM.fit(x, y)
     plot_svm_decision_boundary(linSVM, x, y)
-    pass
+
 
 
 def ex_1_b(x, y):
@@ -67,7 +67,6 @@ def ex_1_b(x, y):
     linSVM = svm.SVC(kernel="linear")
     linSVM.fit(x_new, y_new)
     plot_svm_decision_boundary(linSVM, x_new, y_new)
-    pass
 
 
 def ex_1_c(x, y):
@@ -93,7 +92,7 @@ def ex_1_c(x, y):
         linSVM.fit(x_new, y_new)
         plot_svm_decision_boundary(linSVM, x_new, y_new)
 
-    pass
+
 
 def ex_2_a(x_train, y_train, x_test, y_test):
     """
@@ -109,7 +108,18 @@ def ex_2_a(x_train, y_train, x_test, y_test):
     ## Train an SVM with a linear kernel for the given dataset
     ## and plot the decision boundary and support vectors  for each using 'plot_svm_decision_boundary' function
     ###########
-    pass
+
+    linSVM = svm.SVC(kernel="linear")
+    linSVM.fit(x_train, y_train)
+
+    train_score = linSVM.score(x_train, y_train)
+    test_score = linSVM.score(x_test, y_test)
+
+    print("train_score for linear kernel: ", train_score)
+    print("test_score for linear kernel: ", test_score)
+
+    plot_svm_decision_boundary(linSVM, x_train, y_train, x_test, y_test)
+
 
 
 def ex_2_b(x_train, y_train, x_test, y_test):
@@ -131,6 +141,26 @@ def ex_2_b(x_train, y_train, x_test, y_test):
     ###########
     degrees = range(1, 20)
 
+    train_scores = []
+    test_scores = []
+    polySVMs = []
+
+    for degree in degrees:
+        polySVM = svm.SVC(kernel="poly", coef0=1)
+        polySVM.set_params(degree=degree)
+        polySVM.fit(x_train, y_train)
+
+        train_scores.append(polySVM.score(x_train, y_train))
+        test_scores.append(polySVM.score(x_test, y_test))
+        polySVMs.append(polySVM)
+
+    best_test_score_index = np.argmax(test_scores)
+    print("best_train_score for poly kernel: ", train_scores[best_test_score_index])
+    print("best_test_score for poly kernel: ", test_scores[best_test_score_index])
+    print("degree for best test_score: ", degrees[best_test_score_index])
+    plot_score_vs_degree(train_scores, test_scores, degrees)
+
+    plot_svm_decision_boundary(polySVMs[best_test_score_index], x_train, y_train, x_test, y_test)
 
 def ex_2_c(x_train, y_train, x_test, y_test):
     """
@@ -150,6 +180,25 @@ def ex_2_c(x_train, y_train, x_test, y_test):
     ###########
     gammas = np.arange(0.01, 2, 0.02)
 
+    train_scores = []
+    test_scores = []
+    rbfSVMs = []
+    for gamma in gammas:
+        rbfSVM = svm.SVC(kernel="rbf", coef0=1)
+        rbfSVM.set_params(gamma=gamma)
+        rbfSVM.fit(x_train, y_train)
+
+        train_scores.append(rbfSVM.score(x_train, y_train))
+        test_scores.append(rbfSVM.score(x_test, y_test))
+        rbfSVMs.append(rbfSVM)
+
+    best_test_score_index = np.argmax(test_scores)
+    print("gamma of best_test_score: ", gammas[best_test_score_index])
+    print("best_test_score for rbf kernel: ", test_scores[best_test_score_index])
+
+    plot_score_vs_gamma(train_scores, test_scores, gammas)
+    plot_svm_decision_boundary(rbfSVMs[best_test_score_index], x_train, y_train, x_test, y_test)
+
 
 def ex_3_a(x_train, y_train, x_test, y_test):
     """
@@ -168,6 +217,8 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     ## - plot the scores with varying gamma using the function plot_score_versus_gamma
     ## - Mind that the chance level is not .5 anymore and add the score obtained with the linear kernel as optional argument of this function
     ###########
+
+
 
 
 def ex_3_b(x_train, y_train, x_test, y_test):
