@@ -184,7 +184,7 @@ def ex_2_c(x_train, y_train, x_test, y_test):
     test_scores = []
     rbfSVMs = []
     for gamma in gammas:
-        rbfSVM = svm.SVC(kernel="rbf", coef0=1)
+        rbfSVM = svm.SVC(kernel="rbf")
         rbfSVM.set_params(gamma=gamma)
         rbfSVM.fit(x_train, y_train)
 
@@ -217,6 +217,32 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     ## - plot the scores with varying gamma using the function plot_score_versus_gamma
     ## - Mind that the chance level is not .5 anymore and add the score obtained with the linear kernel as optional argument of this function
     ###########
+    linSVM = svm.SVC(kernel="linear", decision_function_shape='ovr')
+
+    train_scores_rbf = []
+    test_scores_rbf = []
+    rbfSVMs = []
+
+    gammas = np.linspace(10e-5, 10e-3, 10)
+    for gamma in gammas:
+        rbfSVM = svm.SVC(kernel="rbf", decision_function_shape='ovr')
+        rbfSVM.set_params(gamma=gamma)
+        rbfSVM.fit(x_train, y_train)
+
+        train_scores_rbf.append(rbfSVM.score(x_train, y_train))
+        test_scores_rbf.append(rbfSVM.score(x_test, y_test))
+        rbfSVMs.append(rbfSVM)
+
+    best_test_score__rbf_index = np.argmax(test_scores_rbf)
+    print("gamma of best_test_rbf_score: ", gammas[best_test_score__rbf_index])
+    print("best_test_score for rbf kernel: ", test_scores_rbf[best_test_score__rbf_index])
+
+    linSVM.fit(x_train, y_train)
+
+    lin_score_train = linSVM.score(x_train, y_train)
+    lin_score_test = linSVM.score(x_test, y_test)
+
+    plot_score_vs_gamma(train_scores_rbf, test_scores_rbf, gammas, lin_score_train, lin_score_test, 0)#TODO ask which baseline should be used
 
 
 
@@ -239,10 +265,26 @@ def ex_3_b(x_train, y_train, x_test, y_test):
     ## Plot the first 10 occurrences of the most misclassified digit using plot_mnist.
     ###########
 
+    linSVM = svm.SVC(kernel="linear", decision_function_shape='ovr')
+    linSVM.fit(x_train, y_train)
+
     labels = range(1, 6)
+    y_pred = linSVM.predict(x_test)
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    #plot_confusion_matrix(conf_matrix, labels)
 
-    sel_error = np.array([0])  # Numpy indices to select images that are misclassified.
-    i = 0  # should be the label number corresponding the largest classification error
+    main_diagonal = np.diagonal(conf_matrix)
+    i = np.argmin(main_diagonal) + 1
+    print("most misclassified class: ", i)
 
+    sel_error = np.array([])  # Numpy indices to select images that are misclassified.
+
+    for j in range(y_pred.shape[0]):
+        if y_test[j] == i and y_pred[j] != y_test[j]:
+            sel_error = np.append(sel_error, j)
+            if len(sel_error) == 10:
+                break
+
+    sel_error = sel_error.astype(int)
     # Plot with mnist plot
-    plot_mnist(x_test[sel_err], y_pred[sel_err], labels=labels[i], k_plots=10, prefix='Real class')
+    plot_mnist(x_test[sel_error], y_pred[sel_error], labels=labels[i - 1], k_plots=10, prefix='Real class')
