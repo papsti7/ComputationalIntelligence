@@ -279,9 +279,19 @@ def ex_3_b(x_train, y_train, x_test, y_test):
 
     plot_confusion_matrix(conf_matrix, labels)
 
-    main_diagonal = np.diagonal(conf_matrix)
-    i = np.argmin(main_diagonal) + 1
-    print("most misclassified class: ", i)
+    most_misclassified_prob = []
+    for col in range(conf_matrix.shape[1]):
+        item_count = 0
+        most_misclassified_value = 0
+
+        for row in range(conf_matrix.shape[0]):
+            item_count += conf_matrix[row, col]
+            if row != col and most_misclassified_value < conf_matrix[row, col]:
+                most_misclassified_value = conf_matrix[row, col]
+
+        most_misclassified_prob.append(most_misclassified_value / item_count)
+
+    i = np.argmax(most_misclassified_prob) + 1
 
     sel_error = np.array([])  # Numpy indices to select images that are misclassified.
 
