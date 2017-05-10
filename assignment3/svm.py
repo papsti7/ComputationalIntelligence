@@ -139,7 +139,7 @@ def ex_2_b(x_train, y_train, x_test, y_test):
     ## Plot the decision boundary and support vectors for the best value of degree
     ## using 'plot_svm_decision_boundary' function
     ###########
-    degrees = range(1, 20)
+    degrees = range(1, 21)
 
     train_scores = []
     test_scores = []
