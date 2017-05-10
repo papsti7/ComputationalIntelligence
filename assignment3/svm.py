@@ -224,6 +224,9 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     lin_score_train = linSVM.score(x_train, y_train)
     lin_score_test = linSVM.score(x_test, y_test)
 
+    print("best_train_score for linear kernel: ", lin_score_train)
+    print("best_test_score for linear kernel: ", lin_score_test)
+
     number_of_classes = linSVM.decision_function(x_test).shape[1]
 
     train_scores_rbf = []
@@ -240,9 +243,9 @@ def ex_3_a(x_train, y_train, x_test, y_test):
         test_scores_rbf.append(rbfSVM.score(x_test, y_test))
         rbfSVMs.append(rbfSVM)
 
-    best_test_score__rbf_index = np.argmax(test_scores_rbf)
-    print("gamma of best_test_rbf_score: ", gammas[best_test_score__rbf_index])
-    print("best_test_score for rbf kernel: ", test_scores_rbf[best_test_score__rbf_index])
+    best_test_score_rbf_index = np.argmax(test_scores_rbf)
+    print("gamma of best_test_rbf_score: ", gammas[best_test_score_rbf_index])
+    print("best_test_score for rbf kernel: ", test_scores_rbf[best_test_score_rbf_index])
 
     # chance level depens on number of classes
     plot_score_vs_gamma(train_scores_rbf, test_scores_rbf, gammas, lin_score_train, lin_score_test, 1/number_of_classes)
