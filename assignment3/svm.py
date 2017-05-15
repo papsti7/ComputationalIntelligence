@@ -114,7 +114,7 @@ def ex_2_a(x_train, y_train, x_test, y_test):
 
     train_score = linSVM.score(x_train, y_train)
     test_score = linSVM.score(x_test, y_test)
-
+    print("lin nSV:", linSVM.support_vectors_.shape)
     print("train_score for linear kernel: ", train_score)
     print("test_score for linear kernel: ", test_score)
 
@@ -159,7 +159,7 @@ def ex_2_b(x_train, y_train, x_test, y_test):
     print("best_test_score for poly kernel: ", test_scores[best_test_score_index])
     print("degree for best test_score: ", degrees[best_test_score_index])
     plot_score_vs_degree(train_scores, test_scores, degrees)
-
+    print("polySVm nSV: ", polySVM.support_vectors_.shape)
     plot_svm_decision_boundary(polySVMs[best_test_score_index], x_train, y_train, x_test, y_test)
 
 def ex_2_c(x_train, y_train, x_test, y_test):
@@ -195,7 +195,7 @@ def ex_2_c(x_train, y_train, x_test, y_test):
     best_test_score_index = np.argmax(test_scores)
     print("gamma of best_test_score: ", gammas[best_test_score_index])
     print("best_test_score for rbf kernel: ", test_scores[best_test_score_index])
-
+    print("rbfSVm nSV: ", rbfSVM.support_vectors_.shape)
     plot_score_vs_gamma(train_scores, test_scores, gammas)
     plot_svm_decision_boundary(rbfSVMs[best_test_score_index], x_train, y_train, x_test, y_test)
 
@@ -217,7 +217,8 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     ## - plot the scores with varying gamma using the function plot_score_versus_gamma
     ## - Mind that the chance level is not .5 anymore and add the score obtained with the linear kernel as optional argument of this function
     ###########
-    linSVM = svm.SVC(kernel="linear", decision_function_shape='ovr')
+    C = 3e-4
+    linSVM = svm.SVC(kernel="linear", decision_function_shape='ovr', C=C)
 
     linSVM.fit(x_train, y_train)
 
@@ -233,9 +234,9 @@ def ex_3_a(x_train, y_train, x_test, y_test):
     test_scores_rbf = []
     rbfSVMs = []
 
-    gammas = np.linspace(10e-5, 10e-3, 10)
+    gammas = np.linspace(1e-5, 1e-3, 12)
     for gamma in gammas:
-        rbfSVM = svm.SVC(kernel="rbf", decision_function_shape='ovr')
+        rbfSVM = svm.SVC(kernel="rbf", decision_function_shape='ovr', C=C)
         rbfSVM.set_params(gamma=gamma)
         rbfSVM.fit(x_train, y_train)
 
@@ -271,8 +272,8 @@ def ex_3_b(x_train, y_train, x_test, y_test):
     ## Plot the confusion matrix with plot_confusion_matrix.
     ## Plot the first 10 occurrences of the most misclassified digit using plot_mnist.
     ###########
-
-    linSVM = svm.SVC(kernel="linear", decision_function_shape='ovr')
+    C = 3e-4
+    linSVM = svm.SVC(kernel="linear", decision_function_shape='ovr', C=C)
     linSVM.fit(x_train, y_train)
 
     labels = range(1, 6)
