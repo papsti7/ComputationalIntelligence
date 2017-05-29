@@ -66,8 +66,40 @@ def calcLambda(ri, point, anchors, nrAnchor, nrSample):
         lambdas.append(lambda_i)
     return lambdas
 
+def derivationOfPoint(x_i, y_i, x, y):
+    derivationInX = -1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), 1 / 2) * 2 * (x_i - x)
+    derivationInY = -1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), 1 / 2) * 2 * (y_i - y)
+
+    return (derivationInX, derivationInY)
+
+def jacobi(p_start, p_anchor):
+    jacobi_mat = np.ndarray((p_anchor.shape[0], p_start.shape[0]))
+    for i, anchor in enumerate(p_anchor):
+        derivation = derivationOfPoint(anchor[0], anchor[1], p_start[0], p_start[1])
+        jacobi_mat[i, 0] = derivation[0]
+        jacobi_mat[i, 1] = derivation[1]
+
+    return jacobi_mat
+
+def ds(p_start, p_anchor):
+    distances = np.ndarray((p_anchor.shape[0], 1))
+    for i, anchor in enumerate(p_anchor):
+        distances[i] = d(p_start, anchor)
+
+    return distances
+
+
 def LeastSquaresGN(p_anchor, p_start, r, max_iter, tol):
 
+    while True :
+        max_iter -= 1
+        p_old = p_start
+        jacobian_inv = np.dot(np.linalg.inv(np.dot(jacobi(p_start, p_anchor).T, jacobi(p_start, p_anchor))), jacobi(p_start, p_anchor).T)
+        diffs = ((r - ds(p_start, p_anchor).transpose()).transpose())
+        p_start = p_start - np.dot(jacobian_inv, diffs)
+        if d(p_start, p_old) > tol or max_iter > 0:
+            break
+    return p_start
 
 # START OF CI ASSIGNMENT 4
 # -----------------------------------------------------------------------------------------------------------------------
@@ -142,11 +174,12 @@ for scenario in range(1, 5):
 
     # perform estimation---------------------------------------
     # #TODO
+    p_start = np.array([[1,1]]).transpose()
     for i in range(0, NrSamples):
-        dummy = i
-
+        p_start = LeastSquaresGN(p_anchor, p_start, data[i], 20000, 0.5)
     # calculate error measures and create plots----------------
     # TODO
+    print(p_start)
 
 # 1.4) Numerical Maximum-Likelihood Estimation of the Position (scenario 3)----------------------------------------------
 # 1.4.1) calculating the joint likelihood for the first measurement------------------------------------------------------
