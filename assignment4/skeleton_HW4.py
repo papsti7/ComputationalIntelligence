@@ -42,6 +42,32 @@ def ecdf(realizations):
     Fx = np.linspace(0, 1, len(realizations))
     return Fx, x
 
+def d(para, anchor):
+    return np.linalg.norm(anchor - para)
+
+def calcVarianz(ri, point, anchors, nrAnchor, nrSample):
+    sigmas = []
+    for i in range(nrAnchor):
+        sigma_i = 0
+        for j in range(nrSample):
+            sigma_i += np.power(ri[j, i] - d(point, anchors[i]), 2)
+        sigma_i /= nrSample
+        sigmas.append(sigma_i)
+    return sigmas
+
+def calcLambda(ri, point, anchors, nrAnchor, nrSample):
+    lambdas = []
+    for i in range(nrAnchor):
+        lambda_i = 0
+        for j in range(nrSample):
+            if ri[j, i] >= d(point, anchors[i]):
+                lambda_i += 1 / (ri[j, i] - d(point, anchors[i]))
+        lambda_i /= nrSample
+        lambdas.append(lambda_i)
+    return lambdas
+
+def LeastSquaresGN(p_anchor, p_start, r, max_iter, tol):
+
 
 # START OF CI ASSIGNMENT 4
 # -----------------------------------------------------------------------------------------------------------------------
@@ -62,14 +88,12 @@ plt.plot(p_true[0, 0], p_true[0, 1], 'r*')
 plt.text(p_true[0, 0] + 0.2, p_true[0, 1] + 0.2, r'$p_{true}$')
 plt.xlabel("x/m")
 plt.ylabel("y/m")
-plt.show()
+#plt.show()
 
 # 1.2) maximum likelihood estimation of models---------------------------------------------------------------------------
 # 1.2.1) finding the exponential anchor----------------------------------------------------------------------------------
 # TODO
-
-
-
+#insert plots
 
 # 1.2.3) estimating the parameters for all scenarios---------------------------------------------------------------------
 
@@ -77,17 +101,20 @@ plt.show()
 data = np.loadtxt('HW4_1.data', skiprows=0)
 NrSamples = np.size(data, 0)
 # TODO
-
+print("varianzen:   ", calcVarianz(data, p_true, p_anchor, NrAnchors, NrSamples))
+print("Lambdas:     ", calcLambda(data, p_true, p_anchor, NrAnchors, NrSamples))
 # scenario 2
 data = np.loadtxt('HW4_2.data', skiprows=0)
 NrSamples = np.size(data, 0)
 # TODO
-
+print("varianzen:   ", calcVarianz(data, p_true, p_anchor, NrAnchors, NrSamples))
+print("Lambdas:     ", calcLambda(data, p_true, p_anchor, NrAnchors, NrSamples))
 # scenario 3
 data = np.loadtxt('HW4_3.data', skiprows=0)
 NrSamples = np.size(data, 0)
 # TODO
-
+print("varianzen:   ", calcVarianz(data, p_true, p_anchor, NrAnchors, NrSamples))
+print("Lambdas:     ", calcLambda(data, p_true, p_anchor, NrAnchors, NrSamples))
 # 1.3) Least-Squares Estimation of the Position--------------------------------------------------------------------------
 # 1.3.2) writing the function LeastSquaresGN()...(not here but in this file)---------------------------------------------
 # TODO
