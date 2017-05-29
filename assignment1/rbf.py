@@ -42,7 +42,7 @@ def get_centers_and_sigma(n_center):
 
     # END TODO
     ######################
-    return centers, sigma
+        return centers, sigma
 
 
 def design_matrix(x, centers, sigma):
