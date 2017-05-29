@@ -42,8 +42,10 @@ def ecdf(realizations):
     Fx = np.linspace(0, 1, len(realizations))
     return Fx, x
 
+
 def d(para, anchor):
     return np.linalg.norm(anchor - para)
+
 
 def calcVarianz(ri, point, anchors, nrAnchor, nrSample):
     sigmas = []
@@ -54,6 +56,7 @@ def calcVarianz(ri, point, anchors, nrAnchor, nrSample):
         sigma_i /= nrSample
         sigmas.append(sigma_i)
     return sigmas
+
 
 def calcLambda(ri, point, anchors, nrAnchor, nrSample):
     lambdas = []
@@ -66,8 +69,9 @@ def calcLambda(ri, point, anchors, nrAnchor, nrSample):
         lambdas.append(lambda_i)
     return lambdas
 
-def LeastSquaresGN(p_anchor, p_start, r, max_iter, tol):
 
+def LeastSquaresGN(p_anchor, p_start, r, max_iter, tol):
+    pass
 
 # START OF CI ASSIGNMENT 4
 # -----------------------------------------------------------------------------------------------------------------------
@@ -88,12 +92,13 @@ plt.plot(p_true[0, 0], p_true[0, 1], 'r*')
 plt.text(p_true[0, 0] + 0.2, p_true[0, 1] + 0.2, r'$p_{true}$')
 plt.xlabel("x/m")
 plt.ylabel("y/m")
-#plt.show()
+# plt.show()
 
 # 1.2) maximum likelihood estimation of models---------------------------------------------------------------------------
 # 1.2.1) finding the exponential anchor----------------------------------------------------------------------------------
 # TODO
-#insert plots
+# insert plots
+
 
 # 1.2.3) estimating the parameters for all scenarios---------------------------------------------------------------------
 
@@ -107,6 +112,13 @@ print("Lambdas:     ", calcLambda(data, p_true, p_anchor, NrAnchors, NrSamples))
 data = np.loadtxt('HW4_2.data', skiprows=0)
 NrSamples = np.size(data, 0)
 # TODO
+
+for i in range(4):
+    plt.clf()
+    plt.hist(data.transpose()[i])
+    plt._show()
+
+
 print("varianzen:   ", calcVarianz(data, p_true, p_anchor, NrAnchors, NrSamples))
 print("Lambdas:     ", calcLambda(data, p_true, p_anchor, NrAnchors, NrSamples))
 # scenario 3
@@ -145,8 +157,8 @@ for scenario in range(1, 5):
     for i in range(0, NrSamples):
         dummy = i
 
-    # calculate error measures and create plots----------------
-    # TODO
+        # calculate error measures and create plots----------------
+        # TODO
 
 # 1.4) Numerical Maximum-Likelihood Estimation of the Position (scenario 3)----------------------------------------------
 # 1.4.1) calculating the joint likelihood for the first measurement------------------------------------------------------
