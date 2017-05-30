@@ -203,7 +203,7 @@ for scenario in range(1, 5):
 
     # perform estimation---------------------------------------
     # #TODO
-
+    plt.clf()
     for i in range(0, NrSamples):
         if (i % 50 == 0):
             print("sample #:", i)
@@ -211,6 +211,19 @@ for scenario in range(1, 5):
         p_start = LeastSquaresGN(p_anchor, p_start, data[i], 50, 0.005)
         p_estimated[i][0] = p_start[0]
         p_estimated[i][1] = p_start[1]
+        plt.plot(p_start[0], p_start[1], "y.")
+
+    for i in range(0, NrAnchors):
+        if  (scenario == 4 and i == 3):
+            continue
+        plt.plot(p_anchor[i, 0], p_anchor[i, 1], 'bo')
+        plt.text(p_anchor[i, 0] + 0.2, p_anchor[i, 1] + 0.2, r'$p_{a,' + str(i) + '}$')
+        # plot estimated positions
+
+        # plot true position
+    plt.plot(p_true[0, 0], p_true[0, 1], 'r*')
+    plt.text(p_true[0, 0] + 0.2, p_true[0, 1] + 0.2, r'$p_{true}$')
+    plt.show()
     # calculate error measures and create plots----------------
     # TODO
     mu = np.zeros((2,1))
@@ -238,6 +251,8 @@ for scenario in range(1, 5):
     plt.show()
 
     plotGaussContour(mu=mu, cov=cov, xmin=-10, xmax=10, ymin=-10, ymax=10, title="Gauss - Contour")
+
+
 
 # 1.4) Numerical Maximum-Likelihood Estimation of the Position (scenario 3)----------------------------------------------
 # 1.4.1) calculating the joint likelihood for the first measurement------------------------------------------------------
