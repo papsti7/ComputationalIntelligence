@@ -67,22 +67,22 @@ def calcLambda(ri, point, anchors, nrAnchor, nrSample):
     return lambdas
 
 def derivationOfPoint(x_i, y_i, x, y):
-    derivationInX = -1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), 1 / 2) * 2 * (x_i - x)
-    derivationInY = -1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), 1 / 2) * 2 * (y_i - y)
+    derivationInX = 1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), 1 / 2) * 2 * (x_i - x)
+    derivationInY = 1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), 1 / 2) * 2 * (y_i - y)
 
     return (derivationInX, derivationInY)
 
-def jacobi(p_start, p_anchor):
-    jacobi_mat = np.ndarray((p_anchor.shape[0], p_start.shape[0]))
+def jacobian(p_start, p_anchor):
+    jacobian_mat = np.ndarray((p_anchor.shape[0], p_start.shape[0]))
     for i, anchor in enumerate(p_anchor):
         derivation = derivationOfPoint(anchor[0], anchor[1], p_start[0], p_start[1])
-        jacobi_mat[i, 0] = derivation[0]
-        jacobi_mat[i, 1] = derivation[1]
+        jacobian_mat[i, 0] = derivation[0]
+        jacobian_mat[i, 1] = derivation[1]
 
-    return jacobi_mat
+    return jacobian_mat
 
 def ds(p_start, p_anchor):
-    distances = np.ndarray((p_anchor.shape[0], 1))
+    distances = np.ndarray((p_anchor.shape[0],))
     for i, anchor in enumerate(p_anchor):
         distances[i] = d(p_start, anchor)
 
@@ -94,12 +94,32 @@ def LeastSquaresGN(p_anchor, p_start, r, max_iter, tol):
     while True :
         max_iter -= 1
         p_old = p_start
-        jacobian_inv = np.dot(np.linalg.inv(np.dot(jacobi(p_start, p_anchor).T, jacobi(p_start, p_anchor))), jacobi(p_start, p_anchor).T)
-        diffs = ((r - ds(p_start, p_anchor).transpose()).transpose())
+        jacobian_inv = np.dot(np.linalg.inv(np.dot(jacobian(p_start, p_anchor).T, jacobian(p_start, p_anchor))), jacobian(p_start, p_anchor).T)
+        diffs = (r - ds(p_start, p_anchor))
         p_start = p_start - np.dot(jacobian_inv, diffs)
-        if d(p_start, p_old) > tol or max_iter > 0:
+        if d(p_start, p_old) < tol or max_iter <= 0:
             break
     return p_start
+
+def getMinValues(p_anchor):
+    minX = 999999
+    minY = 999999
+    for anchor in p_anchor:
+        if minX > anchor[0]:
+            minX = anchor[0]
+        if minY > anchor[1]:
+            minY = anchor[1]
+    return (minX, minY)
+
+def getMaxValues(p_anchor):
+    maxX = -999999
+    maxY = -999999
+    for anchor in p_anchor:
+        if maxX < anchor[0]:
+            maxX = anchor[0]
+        if maxY < anchor[1]:
+            maxY = anchor[1]
+    return (maxX, maxY)
 
 # START OF CI ASSIGNMENT 4
 # -----------------------------------------------------------------------------------------------------------------------
@@ -166,7 +186,8 @@ print("Lambdas:     ", calcLambda(data, p_true, p_anchor, NrAnchors, NrSamples))
 
 # store all N estimated positions
 p_estimated = np.zeros((NrSamples, 2))
-
+minValues = getMinValues(p_anchor)
+maxValues = getMaxValues(p_anchor)
 for scenario in range(1, 5):
     if (scenario == 1):
         data = np.loadtxt('HW4_1.data', skiprows=0)
@@ -176,17 +197,41 @@ for scenario in range(1, 5):
         data = np.loadtxt('HW4_3.data', skiprows=0)
     elif (scenario == 4):
         # scenario 2 without the exponential anchor
-        data = np.loadtxt('HW4_2.data', skiprows=0)
+        data = np.loadtxt('HW4_2.data', skiprows=0, usecols=range(1, 4))
+        p_anchor = p_anchor[1:4, ]
     NrSamples = np.size(data, 0)
 
     # perform estimation---------------------------------------
     # #TODO
-    p_start = np.array([[1,1]]).transpose()
+
     for i in range(0, NrSamples):
-        p_start = LeastSquaresGN(p_anchor, p_start, data[i], 20000, 0.5)
+        print("sample #:", i)
+        p_start = np.array([np.random.uniform(minValues[0], maxValues[0]), np.random.uniform(minValues[1], maxValues[1])])
+        p_start = LeastSquaresGN(p_anchor, p_start, data[i], 50, 0.005)
+        p_estimated[i][0] = p_start[0]
+        p_estimated[i][1] = p_start[1]
     # calculate error measures and create plots----------------
     # TODO
-    print(p_start)
+    mu = np.zeros(2,)
+    cov = np.zeros((2,2))
+
+    mu[0] = np.mean(p_estimated.transpose()[0, :])
+    mu[1] = np.mean(p_estimated.transpose()[1, :])
+
+    cov[0][0] = np.mean(np.power(p_true[0][0] - p_estimated.transpose()[0, :], 2))
+    cov[1][1] = np.mean(np.power(p_true[0][1] - p_estimated.transpose()[1, :], 2))
+
+    errors = []
+    for estimate in p_estimated:
+        errors.append(d(p_true, estimate))
+
+
+    Fx, x = ecdf(errors)
+    plt.clf()
+    plt.plot(x, Fx)
+    plt.show()
+
+    plotGaussContour(mu=mu, cov=cov, xmin=int(minValues[0]) - 3, xmax=int(maxValues[0]) + 3, ymin=int(minValues[1]) - 3, ymax=int(maxValues[1]) + 3, title="Gauss - Contour")
 
 # 1.4) Numerical Maximum-Likelihood Estimation of the Position (scenario 3)----------------------------------------------
 # 1.4.1) calculating the joint likelihood for the first measurement------------------------------------------------------
