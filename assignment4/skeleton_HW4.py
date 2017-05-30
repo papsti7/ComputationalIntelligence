@@ -67,8 +67,8 @@ def calcLambda(ri, point, anchors, nrAnchor, nrSample):
     return lambdas
 
 def derivationOfPoint(x_i, y_i, x, y):
-    derivationInX = 1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), 1 / 2) * 2 * (x_i - x)
-    derivationInY = 1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), 1 / 2) * 2 * (y_i - y)
+    derivationInX = 1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), - 1 / 2) * 2 * (x_i - x)
+    derivationInY = 1 / 2 * np.power((np.power((x_i - x), 2) + np.power((y_i - y), 2)), - 1 / 2) * 2 * (y_i - y)
 
     return (derivationInX, derivationInY)
 
@@ -231,7 +231,7 @@ for scenario in range(1, 5):
     plt.plot(x, Fx)
     plt.show()
 
-    plotGaussContour(mu=mu, cov=cov, xmin=int(minValues[0]) - 3, xmax=int(maxValues[0]) + 3, ymin=int(minValues[1]) - 3, ymax=int(maxValues[1]) + 3, title="Gauss - Contour")
+    plotGaussContour(mu=mu, cov=cov, xmin=int(minValues[0]) - 1, xmax=int(maxValues[0]) + 3, ymin=int(minValues[1]) - 3, ymax=int(maxValues[1]) + 1, title="Gauss - Contour")
 
 # 1.4) Numerical Maximum-Likelihood Estimation of the Position (scenario 3)----------------------------------------------
 # 1.4.1) calculating the joint likelihood for the first measurement------------------------------------------------------
