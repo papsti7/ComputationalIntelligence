@@ -160,10 +160,10 @@ data = np.loadtxt('HW4_2.data', skiprows=0)
 NrSamples = np.size(data, 0)
 # TODO
 
-for i in range(4):
-    plt.clf()
-    plt.hist(data.transpose()[i])
-    plt._show()
+#for i in range(4):
+#    plt.clf()
+#    plt.hist(data.transpose()[i])
+#    plt._show()
 
 
 print("varianzen:   ", calcVarianz(data, p_true, p_anchor, NrAnchors, NrSamples))
@@ -205,33 +205,39 @@ for scenario in range(1, 5):
     # #TODO
 
     for i in range(0, NrSamples):
-        print("sample #:", i)
+        if (i % 50 == 0):
+            print("sample #:", i)
         p_start = np.array([np.random.uniform(minValues[0], maxValues[0]), np.random.uniform(minValues[1], maxValues[1])])
         p_start = LeastSquaresGN(p_anchor, p_start, data[i], 50, 0.005)
         p_estimated[i][0] = p_start[0]
         p_estimated[i][1] = p_start[1]
     # calculate error measures and create plots----------------
     # TODO
-    mu = np.zeros(2,)
+    mu = np.zeros((2,1))
     cov = np.zeros((2,2))
 
     mu[0] = np.mean(p_estimated.transpose()[0, :])
     mu[1] = np.mean(p_estimated.transpose()[1, :])
 
-    cov[0][0] = np.mean(np.power(p_true[0][0] - p_estimated.transpose()[0, :], 2))
-    cov[1][1] = np.mean(np.power(p_true[0][1] - p_estimated.transpose()[1, :], 2))
+    cov = np.zeros((2,2))
+    for estimate in p_estimated:
+        e = np.array([[0.],[0.]])
+        e[0] = estimate[0] - mu[0]
+        e[1] = estimate[1] - mu[1]
+        cov += np.dot(e,e.transpose())
+    cov /= NrSamples
+    #print(sum)
 
     errors = []
     for estimate in p_estimated:
         errors.append(d(p_true, estimate))
-
 
     Fx, x = ecdf(errors)
     plt.clf()
     plt.plot(x, Fx)
     plt.show()
 
-    plotGaussContour(mu=mu, cov=cov, xmin=int(minValues[0]) - 1, xmax=int(maxValues[0]) + 3, ymin=int(minValues[1]) - 3, ymax=int(maxValues[1]) + 1, title="Gauss - Contour")
+    plotGaussContour(mu=mu, cov=cov, xmin=-10, xmax=10, ymin=-10, ymax=10, title="Gauss - Contour")
 
 # 1.4) Numerical Maximum-Likelihood Estimation of the Position (scenario 3)----------------------------------------------
 # 1.4.1) calculating the joint likelihood for the first measurement------------------------------------------------------
