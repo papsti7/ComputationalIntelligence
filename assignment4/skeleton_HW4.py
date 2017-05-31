@@ -213,17 +213,7 @@ for scenario in range(1, 5):
         p_estimated[i][1] = p_start[1]
         plt.plot(p_start[0], p_start[1], "y.")
 
-    for i in range(0, NrAnchors):
-        if  (scenario == 4 and i == 3):
-            continue
-        plt.plot(p_anchor[i, 0], p_anchor[i, 1], 'bo')
-        plt.text(p_anchor[i, 0] + 0.2, p_anchor[i, 1] + 0.2, r'$p_{a,' + str(i) + '}$')
-        # plot estimated positions
 
-        # plot true position
-    plt.plot(p_true[0, 0], p_true[0, 1], 'r*')
-    plt.text(p_true[0, 0] + 0.2, p_true[0, 1] + 0.2, r'$p_{true}$')
-    plt.show()
     # calculate error measures and create plots----------------
     # TODO
     mu = np.zeros((2,1))
