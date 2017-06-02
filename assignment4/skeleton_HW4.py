@@ -61,8 +61,8 @@ def calcLambda(ri, point, anchors, nrAnchor, nrSample):
         lambda_i = 0
         for j in range(nrSample):
             if ri[j, i] >= d(point, anchors[i]):
-                lambda_i += 1 / (ri[j, i] - d(point, anchors[i]))
-        lambda_i /= nrSample
+                lambda_i += (ri[j, i] - d(point, anchors[i])) # replace 1 with nrSample
+        lambda_i = nrSample / lambda_i
         lambdas.append(lambda_i)
     return lambdas
 
