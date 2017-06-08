@@ -96,6 +96,26 @@ def calc_r_n_m(X, M, alpha_0, mu_0, Sigma_0):
         r_n_m.append((alpha_0[i] * likelihood_bivariate_normal(X, mu_0[i], Sigma_0[i])) / calc_all_r_m(X, M, alpha_0, mu_0, Sigma_0))
     return r_n_m
 
+def initValues(X, M):
+
+    mu_init = np.zeros((M, 2))
+    alpha_init = np.zeros((M, 1))
+    sigma_init = []
+    x_shape = X.shape
+    for i in range(M):
+        N = 5
+        mu_0 = np.zeros((2, N))
+        for j in range(N):
+            random_row = X[int(rd.uniform(0, x_shape[0]))]
+            mu_0[0][j] = random_row[0]
+            mu_0[1][j] = random_row[1]
+
+        mu_init[i] = np.mean(mu_0, axis=1)
+        alpha_init[i][0] = 1/M
+        sigma_init.append(np.cov(mu_0).tolist())
+
+    return (alpha_init, mu_init, sigma_init)
+
 ## -------------------------------------------------------    
 ## ------------- START OF  ASSIGNMENT 5 ------------------
 ## -------------------------------------------------------
@@ -104,25 +124,33 @@ def calc_r_n_m(X, M, alpha_0, mu_0, Sigma_0):
 def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
     # TODO
 
+    alpha = alpha_0
+    mu = mu_0
+    Sigma = Sigma_0
 
-    N_m = []
-    for i in range(M):
-        r_n_m = calc_r_n_m(X, M, alpha_0, mu_0, Sigma_0)
+    for i in range(max_iter):
+        N_ms = []
+        print("iter: ", i)
+        r_n_m = calc_r_n_m(X, M, alpha, mu, Sigma)
+
         for index, value in enumerate(r_n_m):
-            N_m.append(np.sum(value))
+            N_ms.append(np.sum(value))
 
-def initValues(M):
+        #update values
+        for j in range(M):
 
-    mu_init = np.zeros((M, 2))
-    alpha_init = np.zeros((M, 1))
-    sigma_init = []
-    for i in range(M):
-        mu_init[i][0] = np.random.uniform(0, 10)
-        mu_init[i][1] = np.random.uniform(0, 10)
-        alpha_init[i][0] = np.random.uniform(0, 1)
-        #sigma_init.append([[np.random.uniform(0, 2), np.random.uniform(0, 2)], [np.random.uniform(0, 2), np.random.uniform(0, 2)]])
-        sigma_init.append([[1, .1], [.1, 1]])
-    return (alpha_init, mu_init, sigma_init)
+            #update alpha
+            alpha[j] = N_ms[j] / X.shape[0]
+            #update mu
+            mu[j] = (1/ N_ms[j]) * np.dot(np.array(r_n_m[j]),np.array(X)) #be careful with matrix vs dot multipl.
+            #update Sigma
+            tmp_Sigma = np.zeros((2, 2))
+            for row in range(len(X)):
+                tmp_Sigma += (r_n_m[j][row] * np.dot((X[row].reshape(2, 1) - mu[j].reshape((2,1))),(X[row].reshape(2, 1) - mu[j].reshape((2,1))).T))
+            Sigma[j] = (1 / N_ms[j]) * tmp_Sigma
+
+    for i,y in enumerate(mu):
+        print("mu", i ,":", y )
 
 def k_means(X, M, mu_0, max_iter):
     # TODO
@@ -146,8 +174,8 @@ def main():
     # 1.) EM algorithm for GMM:
     # TODO	
     M = 5
-    max_iter = 1000
-    (alpha_init, mu_init, sigma_init) = initValues(M)
+    max_iter = 100
+    (alpha_init, mu_init, sigma_init) = initValues(X, M)
     EM(X, M, alpha_0=alpha_init, mu_0=mu_init, Sigma_0=sigma_init, max_iter=max_iter)
 
 
@@ -185,8 +213,8 @@ def sanity_checks():
 
 if __name__ == '__main__':
     # to make experiments replicable (you can change this, if you like)
-    rd.seed(23434345)
-    
+    #rd.seed(23434345)
+    rd.seed(int(np.random.uniform(0, 100000000)))
     sanity_checks()
     main()
     
