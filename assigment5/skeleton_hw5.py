@@ -119,7 +119,7 @@ def initValues(X, M):
 
 def checkIfLikelihoodConverges(X, M, alpha, mu, Sigma, lastValue):
     r_ms = calc_all_r_m(X, M, alpha, mu, Sigma)
-    log_value = np.sum(np.log(r_ms))
+    log_value = int(np.sum(np.log(r_ms)))
     if abs(log_value - lastValue) < 1:
         return True, log_value
     else:
@@ -137,9 +137,11 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
     mu = mu_0
     Sigma = Sigma_0
     log_value = -999999
-
+    logs = []
+    r_n_m = calc_r_n_m(X, M, alpha, mu, Sigma)
     for i in range(max_iter):
         N_ms = []
+
         print("iter: ", i)
         r_n_m = calc_r_n_m(X, M, alpha, mu, Sigma)
 
@@ -154,12 +156,13 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
             #update mu
             mu[j] = (1/ N_ms[j]) * np.dot(np.array(r_n_m[j]),np.array(X))
             #update Sigma
-            tmpX = X
+            tmpX = np.array(X)
             tmpX[:, 0] -= mu[j][0]
             tmpX[:, 1] -= mu[j][1]
-            tmpX.reshape((len(X), 2))
-            X_r_n_m = np.array(r_n_m[j]).reshape(X.shape[0], 1) * X
-            tmp_Sigma = np.dot(X_r_n_m.T, X)
+            tmpX = tmpX.reshape((len(X), 2))
+            X_r_n_m = np.array(r_n_m[j]).reshape(X.shape[0], 1) * tmpX
+            tmp_Sigma = np.dot(X_r_n_m.T, tmpX)
+            #tmp_Sigma = np.zeros((2,2))
             #for row in range(len(X)):
             #    tmp_Sigma += (r_n_m[j][row] * np.dot((X[row].reshape(2, 1) - mu[j].reshape((2,1))),(X[row].reshape(2, 1) - mu[j].reshape((2,1))).T))
             Sigma[j] = (1 / N_ms[j]) * tmp_Sigma
@@ -170,23 +173,33 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
             break
         else:
             log_value = log_new
+            logs.append(log_value)
 
-
-    for i,y in enumerate(mu):
-        print("mu", i ,":", y )
-
-    plt.plot(X[:, 0], X[:, 1], "o")
+    plt.scatter(X[:, 0], X[:, 1], s=3)
+    for i,value in enumerate(mu):
+        print("mu", i ,":", value )
+        plot_gauss_contour(value, Sigma[i], 0, 1000, 0, 3000, "Gauss")
     plt.show()
-
-   # for m in range(M):
-    #    plot_gauss_contour(mu[m], Sigma[m], -10, 10, -10, 10, "Gauss")
-
-    #plt.show()
+    plt.plot(np.arange(len(logs)), logs, '-')
+    plt.xlabel("iteration")
+    plt.ylabel("log- Likelihood")
+    plt.show()
+    softClassification = [[] for i in range(M)]
+    for index, row in enumerate(np.array(r_n_m).T):
+        max = np.argmax(row)
+        softClassification[max].append(X[index])
+    for sC in softClassification:
+        s_C = np.array(sC)
+        plt.scatter(s_C[:, 0], s_C[:, 1], c=np.random.rand(3,), s=3)
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.show()
 
 def k_means(X, M, mu_0, max_iter):
     mus = mu_0
     e = 0.1
     old_distance = -99999
+    Y_Ks = [[] for i in range(M)]
     for iter in range(max_iter):
         print("iter: ", iter)
         Y_Ks = [[] for i in range(M)]
@@ -218,6 +231,8 @@ def k_means(X, M, mu_0, max_iter):
         Y_K = np.array(Y_K)
         plt.scatter(Y_K[:, 0], Y_K[:, 1], c=np.random.rand(3,), s=1)
     plt.scatter(np.array(mus)[:, 0], np.array(mus)[:, 1], c=(0, 0, 0))
+    plt.xlabel("X")
+    plt.ylabel("Y")
     plt.show()
 
 def sample_GMM(alpha, mu, Sigma, N):
@@ -239,7 +254,7 @@ def main():
     M = 5
     max_iter = 100
     (alpha_init, mu_init, sigma_init) = initValues(X, M)
-    #EM(X, M, alpha_0=alpha_init, mu_0=mu_init, Sigma_0=sigma_init, max_iter=max_iter)
+    EM(X, M, alpha_0=alpha_init, mu_0=mu_init, Sigma_0=sigma_init, max_iter=max_iter)
 
 
     # 2.) K-means algorithm:
@@ -255,7 +270,7 @@ def main():
 def sanity_checks():
     # likelihood_bivariate_normal
     mu =  [0.0, 0.0]
-    cov = [[1, 0.2],[0.2, 0.5]]
+    cov = [[1, 0.2], [0.2, 0.5]]
     x = np.array([[0.9, 1.2], [0.8, 0.8], [0.1, 1.0]])
     P = likelihood_bivariate_normal(x, mu, cov)
     print(P)
