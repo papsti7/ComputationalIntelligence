@@ -113,7 +113,11 @@ def initValues(X, M):
 
         mu_init[i] = np.mean(mu_0, axis=1)
         alpha_init[i][0] = 1/M
-        sigma_init.append(np.cov(mu_0).tolist())
+        cov = np.cov(mu_0).tolist()
+        #cov[0][1] = 0.
+        #cov[1][0] = 0.
+        sigma_init.append(cov)
+
 
     return (alpha_init, mu_init, sigma_init)
 
@@ -165,6 +169,8 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
             #tmp_Sigma = np.zeros((2,2))
             #for row in range(len(X)):
             #    tmp_Sigma += (r_n_m[j][row] * np.dot((X[row].reshape(2, 1) - mu[j].reshape((2,1))),(X[row].reshape(2, 1) - mu[j].reshape((2,1))).T))
+            #tmp_Sigma[1][0] = 0.
+            #tmp_Sigma[0][1] = 0.
             Sigma[j] = (1 / N_ms[j]) * tmp_Sigma
 
         converged, log_new = checkIfLikelihoodConverges(X, M, alpha, mu, Sigma, log_value)
@@ -197,7 +203,7 @@ def EM(X, M, alpha_0, mu_0, Sigma_0, max_iter):
 
 def k_means(X, M, mu_0, max_iter):
     mus = mu_0
-    e = 0.1
+    e = 0.001
     old_distance = -99999
     Y_Ks = [[] for i in range(M)]
     for iter in range(max_iter):
@@ -205,7 +211,7 @@ def k_means(X, M, mu_0, max_iter):
         Y_Ks = [[] for i in range(M)]
         distances = np.zeros((X.shape[0], M))
         #classification
-        for i, mu in enumerate(mu_0):
+        for i, mu in enumerate(mus):
             Dist = (X - mu)
             for j,vector in enumerate(Dist):
                 distances[j][i] = np.dot(vector, vector.T)
@@ -249,6 +255,13 @@ def main():
     o = np.loadtxt('data/o.data', skiprows = 0) # label: o
     y = np.loadtxt('data/y.data', skiprows = 0) # label: y
 
+    plt.scatter(a[:, 0], a[:, 1])
+    plt.scatter(e[:, 0], e[:, 1])
+    plt.scatter(i[:, 0], i[:, 1])
+    plt.scatter(o[:, 0], o[:, 1])
+    plt.scatter(y[:, 0], y[:, 1])
+    plt.show()
+
     # 1.) EM algorithm for GMM:
     # TODO	
     M = 5
@@ -259,7 +272,7 @@ def main():
 
     # 2.) K-means algorithm:
     # TODO
-    k_means(X, M, mu_init, 50)
+    k_means(X, M, mu_init, 100)
 
     # 3.) Sampling from GMM
     # TODO
