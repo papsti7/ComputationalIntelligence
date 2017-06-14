@@ -216,14 +216,22 @@ def k_means(X, M, mu_0, max_iter):
             for j,vector in enumerate(Dist):
                 distances[j][i] = np.dot(vector, vector.T)
 
-        distance = 0.
         for index, row in enumerate(distances):
             min = np.argmin(row)
-            distance += row[min]
             Y_Ks[min].append(X[index])
 
         #recalculate clusterpoints
         mus = [np.mean(Y_K, axis=0) for Y_K in Y_Ks]
+
+        distances = np.zeros((X.shape[0], M))
+        for i, mu in enumerate(mus):
+            Dist = (X - mu)
+            for j, vector in enumerate(Dist):
+                distances[j][i] = np.dot(vector, vector.T)
+
+        distance = 0.
+        for index, row in enumerate(distances):
+            distance += row[min]
 
         if abs(old_distance - distance) < e:
             break
