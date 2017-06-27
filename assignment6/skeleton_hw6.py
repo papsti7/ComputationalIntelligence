@@ -73,15 +73,60 @@ class HMM:
 
         X ... Observation sequence -- (N,)
         """
-
+        print("viterbi")
         X = np.asarray(X)
 
         # q_opt is the optimal state sequence; this is a default value
         q_opt = np.array([0, 0, 1, 2])
 
         # TODO: implement Viterbi algorithm
+        print("PI:", self.pi)
+        print("A:", self.A)
+        print("B:", self.B)
+        init_delta = self.pi*self.B.T[X[0]]
+        # print("init", init_delta)
+        # for n in range(1, len(X)):
+        #     tmp_delta = init_delta
+        #     for j in range(0, self.N_s):
+        #         sum = 0
+        #         for i in range(0, self.N_s):
+        #             sum += self.A[i][j] * tmp_delta[i]
+        #         tmp_delta[j] = sum * self.B[j][X[n]]
+        #     init_delta = tmp_delta
+        #
+        print("alphas:", init_delta)
+        p_asterisk = np.zeros((len(X), 1))
+        q_asterisk = np.zeros(len(X), dtype=int)
+        init_delta = self.pi*self.B.T[X[0]]
+        psi = np.zeros((len(X), 3))
+        print("init", init_delta)
+        #p_asterisk[0] = init_delta.max()
+        #q_asterisk[0] = int(init_delta.argmax())
+        for n in range(1, len(X)):
+            tmp_delta = np.array(init_delta)
+            for j in range(0, self.N_s):
+                tmp = np.zeros((3,1))
+                for i in range(0, self.N_s):
+                    tmp[i] = self.A[i][j] * tmp_delta[i]
+                maxi = tmp.max()
+                psi[n][j] = tmp.argmax()
+                init_delta[j] = maxi * self.B[j][X[n]]
 
-        return q_opt
+        print("delta:", init_delta)
+        print("argmaxi:", psi)
+
+        p_asterisk[len(X) - 1] = init_delta.max()
+        q_asterisk[len(X) - 1] = int(init_delta.argmax())
+
+        print("p_astersik:", p_asterisk)
+        print("q_astersik:", q_asterisk)
+
+        for n in range(len(X) - 2, -1, -1):
+            q_asterisk[n] = int(psi[n + 1][int(q_asterisk[n + 1])])
+
+        print("delta:", init_delta)
+        print("q_asterisk:", q_asterisk)
+        return q_asterisk
 
 
     def sample(self, N):
@@ -128,8 +173,8 @@ def main():
     # TODO: implement in HMM.viterbi_discrete
 
     # --- example usage of viterbi_discrete:
-    optimal_state_sequence = hmm1.viterbi_discrete(X1)
-    
+    optimal_state_sequence = hmm2.viterbi_discrete(X1)
+    print("end viterbi")
     print(optimal_state_sequence)
     print([states[i] for i in optimal_state_sequence])
 
