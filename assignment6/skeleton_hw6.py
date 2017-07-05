@@ -162,7 +162,7 @@ def main():
                   [0.95, 0.05],
                   [0.5, 0.5]]) #Emission prob. rows correspond to states, columns to observations
     pi2 = np.array([1/3, 1/3, 1/3]) # Prior
-    hmm2 = HMM(A1, B1, pi2)
+    hmm2 = HMM(A2, B2, pi2)
 
     # define observation sequences
     X1 = np.array([0, 0, 1, 1, 1, 0])    # 0 = umbrella
@@ -173,13 +173,31 @@ def main():
     # TODO: implement in HMM.viterbi_discrete
 
     # --- example usage of viterbi_discrete:
+    optimal_state_sequence = hmm1.viterbi_discrete(X1)
+    print("end viterbi")
+    print(optimal_state_sequence)
+    print([states[i] for i in optimal_state_sequence])
+
+    optimal_state_sequence = hmm1.viterbi_discrete(X2)
+    print("end viterbi")
+    print(optimal_state_sequence)
+    print([states[i] for i in optimal_state_sequence])
+
     optimal_state_sequence = hmm2.viterbi_discrete(X1)
+    print("end viterbi")
+    print(optimal_state_sequence)
+    print([states[i] for i in optimal_state_sequence])
+
+
+    optimal_state_sequence = hmm2.viterbi_discrete(X2)
     print("end viterbi")
     print(optimal_state_sequence)
     print([states[i] for i in optimal_state_sequence])
 
     # 1.2.) Sequence Classification
     # TODO
+
+    
 
     # 1.3.) Sample from HMM
     # TODO: implement in HMM.sample
